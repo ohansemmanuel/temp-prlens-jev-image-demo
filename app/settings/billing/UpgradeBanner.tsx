@@ -24,7 +24,6 @@ export function UpgradeBanner({ plan, planName, daysLeft }: { plan: PlanId; plan
 
   return (
     <div className="banner" role="status">
-      <span aria-hidden="true">✨</span>
       <span>
         You&apos;re on the <b>{planName} trial</b> · {daysLeft} {daysLeft === 1 ? "day" : "days"} left
       </span>
