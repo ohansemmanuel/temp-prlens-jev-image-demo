@@ -1,19 +1,23 @@
+import { planById } from "@/lib/plans";
 import { currentWorkspace } from "@/lib/workspace";
 
-const PLAN_NAMES = { starter: "Starter", pro: "Pro", team: "Team" } as const;
+import { InvoiceTable } from "./InvoiceTable";
+import { PlanPicker } from "./PlanPicker";
+import { UpgradeBanner } from "./UpgradeBanner";
+
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 export default async function BillingPage() {
   const workspace = await currentWorkspace();
+  const plan = planById(workspace.plan);
+  const daysLeft = workspace.trialEndsAt === null ? null : Math.max(0, Math.ceil((Date.parse(workspace.trialEndsAt) - Date.now()) / DAY_MS));
+
   return (
     <>
       <h1>Billing</h1>
-      <section className="card">
-        <h2>Current plan</h2>
-        <p>
-          You&apos;re on <b>{PLAN_NAMES[workspace.plan]}</b>. To change your plan or get a copy of an invoice, email{" "}
-          <a href="mailto:billing@acme.dev">billing@acme.dev</a>.
-        </p>
-      </section>
+      {daysLeft !== null && <UpgradeBanner plan={plan.id} planName={plan.name} daysLeft={daysLeft} />}
+      <PlanPicker current={workspace.plan} />
+      <InvoiceTable />
     </>
   );
 }

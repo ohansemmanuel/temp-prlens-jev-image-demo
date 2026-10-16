@@ -1,3 +1,5 @@
+import { db } from "./db";
+
 export type PlanId = "starter" | "pro" | "team";
 
 export type Workspace = {
@@ -7,15 +9,12 @@ export type Workspace = {
   /** Set while the workspace is trying a paid plan. */
   trialEndsAt: string | null;
   seats: { used: number; limit: number };
+  stripeSubscriptionId: string | null;
 };
 
 // One signed-in workspace is enough for this demo. A real app reads it from the session.
 export async function currentWorkspace(): Promise<Workspace> {
-  return {
-    id: "ws_acme",
-    name: "acme",
-    plan: "pro",
-    trialEndsAt: "2026-10-24T00:00:00.000Z",
-    seats: { used: 4, limit: 5 },
-  };
+  const workspace = db.workspaces.find("ws_acme");
+  if (!workspace) throw new Error("The demo workspace is missing");
+  return workspace;
 }
